@@ -14,7 +14,11 @@ import java.util.List;
 
 /**
  * 사용자 정보를 담당하는 도메인 클래스
- * UserDetails 인터페이스를 구현하여 사용자 정보를 담당
+ * <p>
+ * 이 클래스는 애플리케이션의 사용자 정보를 저장하며 {@link UserDetails} 인터페이스를 구현하여
+ * 스프링 시큐리티와 통합됩니다.
+ * 이를 통해 인증 및 권한 부여 과정을 관리합니다.
+ * </p>
  */
 @Table(name = "users")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -22,17 +26,36 @@ import java.util.List;
 @Entity
 public class User implements UserDetails { // UserDetails 를 상속받아 인증 객체로 사용
 
+    /**
+     * 사용자의 고유 식별자
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", updatable = false)
     private Long id;
 
+    /**
+     * 사용자의 이메일 주소, 로그인 시 사용자명으로 사용됩니다.
+     */
     @Column(name = "email", nullable = false, unique = true)
     private String email;
 
+    /**
+     * 사용자의 암호화된 비밀번호
+     * <p>
+     * 스크링 시큐리티에서 인증 시 사용됩니다.
+     * </p>
+     */
     @Column(name = "password")
     private String password;
 
+    /**
+     * 사용자 인스턴스를 생성하는 빌더 패턴을 사용한 생성자
+     *
+     * @param email    사용자의 이메일 주소.
+     * @param password 사용자의 암호화된 비밀번호.
+     * @param auth     사용자의 권한 (현재 사용되지 않음).
+     */
     @Builder
     public User(String email, String password, String auth) {
         this.email = email;
@@ -43,7 +66,11 @@ public class User implements UserDetails { // UserDetails 를 상속받아 인�
      * 스프링 시큐리티는 사용자 권한을 문자열로 관리하지 않고 GrantedAuthority 객체로 관리합니다.
      * 현재는 단일 권한 "user"만 부여 하고있습니다.
      *
-     * @return
+     * <p>
+     * 사용자의 권한을 반환합니다.
+     * </p>
+     *
+     * @return 사용자의 권한을 나타내는 {@link GrantedAuthority} 컬렉션.
      */
     @Override // 권한 반환
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -53,42 +80,75 @@ public class User implements UserDetails { // UserDetails 를 상속받아 인�
 
     // ===== 인증에 필요한 메서드 : getPassword(), getUsername() =====
 
-    // 사용자 패스워드 반환
+    /**
+     * 사용자의 패스워드를 반환합니다.
+     *
+     * @return 사용자의 암호화된 비밀번호.
+     */
     @Override
     public String getPassword() {
         return password;
     }
 
-    // 사용자 id를 반환(고유한 값)
+    /**
+     * 사용자의 id(이메일)을 사용자명으로 반환합니다.
+     *
+     * @return 사용자의 이메일 주소.
+     */
     @Override
     public String getUsername() {
         return email;
     }
 
-    // ===== 계정 상태 관련 메서드 : isAccountNonExpired(), isAccountNonLocked(), isCredentialsNonExpired(), isEnabled() =====
+    // ===== 계정 상태 관련 메서드 =====
+    // 계정의 만료, 잠금, 비밀번호 만료, 사용 가능 여부를 반환합니다.
+    // isAccountNonExpired(),
+    // isAccountNonLocked(),
+    // isCredentialsNonExpired(),
+    // isEnabled()
+    // =====      END            ====
+
     // 현재는 모두 true로 설정하여 인증에 별다른 제약을 두지 않았습니다.
-    // 계정 만료 여부 반환
+
+    /**
+     * 계정의 만료 여부를 반환합니다.
+     *
+     * @return {@code true}이면 계정이 만료되지 않았음을 나타냅니다.
+     */
     @Override
     public boolean isAccountNonExpired() {
         // 만료되었는지 확인하는 로직
         return true; // true -> 만료되지 않음
     }
 
-    // 계정 잠금 여부 반환
+    /**
+     * 계정의 잠금 여부를 반환합니다.
+     *
+     * @return {@code true}이면 계정이 잠금되지 않았음을 나타냅니다.
+     */
     @Override
     public boolean isAccountNonLocked() {
         // 계정 잠금되었는지 확인하는 로직
         return true; // true -> 잠기지 않음
     }
 
-    // 패스워드의 만료 여부 반환
+
+    /**
+     * 자격 증명의 만료 여부를 반환합니다.
+     *
+     * @return {@code true}이면 자격 증명이 만료되지 않았음을 나타냅니다.
+     */
     @Override
     public boolean isCredentialsNonExpired() {
         // 패스워드가 만료되었는지 확인하는 로직
         return true; // true -> 만료되지 않음
     }
 
-    // 계정 사용 가능 여부 반환
+    /**
+     * 계정의 사용 가능 여부를 반환합니다.
+     *
+     * @return {@code true}이면 계정을 사용할 수 있음을 나타냅니다.
+     */
     @Override
     public boolean isEnabled() {
         // 계정이 사용 가능한지 확인하는 로직
