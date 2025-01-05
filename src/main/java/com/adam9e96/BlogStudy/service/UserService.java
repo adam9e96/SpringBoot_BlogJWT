@@ -26,6 +26,7 @@ public class UserService {
     }
 
     // 메서드 추가 JWT
+    //
     public User findById(Long userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("Unexpected User"));

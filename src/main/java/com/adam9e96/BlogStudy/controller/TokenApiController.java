@@ -15,11 +15,20 @@ import org.springframework.web.bind.annotation.RestController;
 public class TokenApiController {
     private final TokenService tokenService;
 
+    /**
+     * TokenService 의 createNewAccessToken 메소드를 호출하여 요청에서 추출한 리프래시 토큰을 기반으로 새로운 액세스 토큰을 생성합니다.
+     *
+     * @param request 요청
+     * @return HTTP 응답용 객체 CreateAccessTokenResponse
+     */
     @PostMapping("/api/token")
     public ResponseEntity<CreateAccessTokenResponse> createNewAccessToken
-            (@RequestBody CreateAccessTokenRequest request) {
+    (@RequestBody CreateAccessTokenRequest request) {
+
+        // 새로운 액세스 토큰 생성
         String newAccessToken = tokenService.createNewAccessToken(request.getRefreshToken());
 
+        // 응답 생성
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(new CreateAccessTokenResponse(newAccessToken));
     }
