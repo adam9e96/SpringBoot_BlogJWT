@@ -17,6 +17,9 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Set;
 
+/**
+ * JWT 토큰을 생성하고 검증하는 클래스
+ */
 @RequiredArgsConstructor
 @Service
 public class TokenProvider {
